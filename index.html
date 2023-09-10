@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Multi-Key Piano Sound Efficient</title>
+
+  <style>
+    body {
+      user-select: none;
+    }
+
+    #keyboard {
+      width: auto;
+      height: 120px;
+      display: flex;
+      align-items: flex-start;
+      /* border: 1px solid black; */
+      padding: 30px;
+    }
+
+    .white-key,
+    .black-key {
+      height: 120px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .white-key {
+      width: 40px;
+      background-color: white;
+      border: 1px solid black;
+    }
+
+    .black-key {
+      width: 30px;
+      height: 80px;
+      background-color: black;
+      margin-left: -15px;
+      margin-right: -15px;
+      z-index: 1;
+    }
+
+    .white-key-text {
+      position: relative;
+      top: 0;
+      color: black;
+      font-size: 12px;
+    }
+
+    .black-key-text {
+      position: relative;
+      top: 0;
+      color: white;
+      font-size: 12px;
+    }
+
+    .key-on {
+      background-color: gray;
+    }
+
+    #memo {
+      width: 500px;
+      height: 100px;
+      font-size: xx-large;
+    }
+  </style>
+
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+</head>
+
+<body>
+  <h1>SMALL PIANO on web</h1>
+  <p>Press PC keyboard ("G"=C3) or Click on Screen Keyboard</p>
+
+  <div id="keyboard">
+    <div class="white-key keys" id="A"><span class="white-key-text">A</span></div>
+    <div class="black-key keys" id="W"><span class="black-key-text">W</span></div>
+    <!-- G2 -->
+    <div class="white-key keys" id="S"><span class="white-key-text">S</span></div>
+    <div class="black-key keys" id="E"><span class="black-key-text">E</span></div>
+    <!-- A2 -->
+    <div class="white-key keys" id="D"><span class="white-key-text">D</span></div>
+    <div class="black-key keys" id="R"><span class="black-key-text">R</span></div>
+    <!-- B2 -->
+    <div class="white-key keys" id="F"><span class="white-key-text">F</span></div>
+    <!-- C3 -->
+    <div class="white-key keys" id="G"><span class="white-key-text">G</span></div>
+    <div class="black-key keys" id="Y"><span class="black-key-text">Y</span></div>
+    <!-- D3 -->
+    <div class="white-key keys" id="H"><span class="white-key-text">H</span></div>
+    <div class="black-key keys" id="U"><span class="black-key-text">U</span></div>
+    <!-- E3 -->
+    <div class="white-key keys" id="J"><span class="white-key-text">J</span></div>
+    <!-- F3 -->
+    <div class="white-key keys" id="K"><span class="white-key-text">K</span></div>
+    <div class="black-key keys" id="O"><span class="black-key-text">O</span></div>
+    <!-- G3 -->
+    <div class="white-key keys" id="L"><span class="white-key-text">L</span></div>
+    <div class="black-key keys" id="P"><span class="black-key-text">P</span></div>
+    <!-- A3 -->
+    <div class="white-key keys" id=";"><span class="white-key-text">;</span></div>
+    <div class="black-key keys" id="@"><span class="black-key-text">@</span></div>
+    <!-- B3 -->
+    <div class="white-key keys" id=":"><span class="white-key-text">:</span></div>
+    <!-- C4 -->
+    <div class="white-key keys" id="]"><span class="white-key-text">]</span></div>
+
+  </div>
+  <p>演奏時は日本語入力をオフにしてください</p>
+
+  <div>
+
+    <p>memo</p>
+    <textarea id="memo"></Textarea>
+  </div>
+  <p><a href="ryjkmr.com">ryjkmr.com</a></p>
+
+
+  <script>
+    let mouseDown = false;
+    // 各キーに対応する音源をロード（一度だけ）
+    const sounds = {
+      'A': new Howl({ src: ['./piano_tones/piano_tones_1.wav'], loop: false }),
+      'W': new Howl({ src: ['./piano_tones/piano_tones_2.wav'], loop: false }),
+      'S': new Howl({ src: ['./piano_tones/piano_tones_3.wav'], loop: false }),
+      'E': new Howl({ src: ['./piano_tones/piano_tones_4.wav'], loop: false }),
+      'D': new Howl({ src: ['./piano_tones/piano_tones_5.wav'], loop: false }),
+      'R': new Howl({ src: ['./piano_tones/piano_tones_6.wav'], loop: false }),
+      'F': new Howl({ src: ['./piano_tones/piano_tones_7.wav'], loop: false }),
+      'G': new Howl({ src: ['./piano_tones/piano_tones_8.wav'], loop: false }),
+      'Y': new Howl({ src: ['./piano_tones/piano_tones_9.wav'], loop: false }),
+      'H': new Howl({ src: ['./piano_tones/piano_tones_10.wav'], loop: false }),
+      'U': new Howl({ src: ['./piano_tones/piano_tones_11.wav'], loop: false }),
+      'J': new Howl({ src: ['./piano_tones/piano_tones_12.wav'], loop: false }),
+      'K': new Howl({ src: ['./piano_tones/piano_tones_13.wav'], loop: false }),
+      'O': new Howl({ src: ['./piano_tones/piano_tones_14.wav'], loop: false }),
+      'L': new Howl({ src: ['./piano_tones/piano_tones_15.wav'], loop: false }),
+      'P': new Howl({ src: ['./piano_tones/piano_tones_16.wav'], loop: false }),
+      ';': new Howl({ src: ['./piano_tones/piano_tones_17.wav'], loop: false }),
+      '@': new Howl({ src: ['./piano_tones/piano_tones_18.wav'], loop: false }),
+      ':': new Howl({ src: ['./piano_tones/piano_tones_19.wav'], loop: false }),
+      ']': new Howl({ src: ['./piano_tones/piano_tones_20.wav'], loop: false })
+    };
+
+    // キーボードが押されたら対応するアクションを実行
+    document.addEventListener('keydown', function (event) {
+      if (event.repeat) return; // キーのオートリピートを無視
+      const key = event.key.toUpperCase();
+      console.log(key);
+      if (sounds[key]) {
+        sounds[key].play();
+        key_disp_on_off(key);
+      }
+    });
+
+    // キーボードが離されたら音を停止
+    document.addEventListener('keyup', function (event) {
+      const key = event.key.toUpperCase();
+      if (sounds[key]) {
+        sounds[key].stop();
+        key_disp_on_off(key);
+      }
+    });
+
+    document.addEventListener("mouseup", function (event) {
+      mouseDown = false;
+    });
+
+    function key_disp_on_off(k) {
+      var element = document.getElementById(k);
+      if (element) {
+        element.classList.toggle("key-on");
+      }
+    }
+
+
+    // class="keys"を持つ全ての要素を選択
+    const elementsWithKeysClass = document.querySelectorAll('.keys');
+
+    // 各要素にkeydownイベントとkeyupイベントのリスナーを追加
+    elementsWithKeysClass.forEach(element => {
+      element.addEventListener('mousedown', function (event) {
+        mouseDown = true;
+        // この要素のidを変数keyに保存
+        const key = this.id;
+        if (sounds[key]) {
+          sounds[key].play();
+          removeAllKeyOn();
+          key_disp_on_off(key);
+        }
+        console.log('MouseDown Event:', key);
+      });
+
+      element.addEventListener('mouseup', function (event) {
+        mouseDown = false;
+        // この要素のidを変数keyに保存
+        const key = this.id;
+        if (sounds[key]) {
+          sounds[key].stop();
+          removeAllKeyOn();
+        }
+        console.log('MouseUp Event:', key);
+      });
+
+      element.addEventListener('mouseleave', function (event) {
+        // この要素のidを変数keyに保存
+        const key = this.id;
+        if (sounds[key].playing()) {
+          sounds[key].stop();
+          removeAllKeyOn();
+        }
+        console.log('MouseLeave Event:', key);
+      });
+
+      element.addEventListener('mouseenter', function (event) {
+        // この要素のidを変数keyに保存
+        const key = this.id;
+        if (!sounds[key].playing() && mouseDown) {
+          sounds[key].play();
+          removeAllKeyOn();
+          key_disp_on_off(key);
+        }
+        console.log('MouseLeave Event:', key);
+      });
+
+
+    });
+
+
+    function removeAllKeyOn() {
+      // class="keys"を持つ全ての要素を選択
+      const elementsWithKeysClass = document.querySelectorAll('.keys');
+
+      // 各要素からclass "key-on"を削除
+      elementsWithKeysClass.forEach(element => {
+        element.classList.remove('key-on');
+      });
+    }
+
+
+    document.getElementById('memo').addEventListener('keydown', function (e) {
+      console.log('keydown event detected on textarea');
+      e.stopPropagation(); // イベント伝搬を停止
+    });
+
+    document.getElementById('memo').addEventListener('keyup', function (e) {
+      console.log('keyup event detected on textarea');
+      e.stopPropagation(); // イベント伝搬を停止
+    });
+
+
+  </script>
+
+</body>
+
+</html>
